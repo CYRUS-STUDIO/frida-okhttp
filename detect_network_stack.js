@@ -37,6 +37,18 @@ Java.perform(function () {
         try {
             const TTNetInit = Java.use('com.bytedance.ttnet.TTNetInit');
             console.log("[✓] Detected TTNet usage: com.bytedance.ttnet.TTNetInit");
+
+            // getRetrofitLog 方法用于生成完整的埋点数据日志（最终序列化为 JSON 上报），包含 ttnetVersion 信息
+            const RetrofitMetrics = Java.use("com.bytedance.retrofit2.RetrofitMetrics");
+            RetrofitMetrics.getRetrofitLog.implementation = function () {
+                const result = this.getRetrofitLog();
+                console.log("\n[Frida] 📦 RetrofitMetrics.getRetrofitLog() called:");
+                console.log(result);  // 输出 JSON 字符串日志
+                return result;
+            };
+
+            console.log("[Frida] ✅ Hooked getRetrofitLog()");
+
         } catch (e) {
             console.log("[-] TTNet not used.");
         }
